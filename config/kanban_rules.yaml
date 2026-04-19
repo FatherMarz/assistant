@@ -1,0 +1,16 @@
+# Optional rules for the Kanban board at vault/todos.md.
+#
+# forbidden_project_prefixes: if a card's --project slug starts with any of
+# these prefixes, `propose` rejects it unless --force is passed. Useful when
+# some project slugs should route to a different system entirely (e.g. a
+# separate ticketing tool for product/dev work).
+#
+# Example:
+#   forbidden_project_prefixes:
+#     - acme-                 # everything "acme-*" goes to Jira
+#     - platform-
+#
+# duplicate_threshold: fuzzy-match ratio for dedup (0.0–1.0). 0.88 is strict.
+
+forbidden_project_prefixes: []
+duplicate_threshold: 0.88

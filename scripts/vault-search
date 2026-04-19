@@ -1,0 +1,4 @@
+#!/bin/bash
+# Thin wrapper around vault_search.py that uses the dedicated venv.
+# Usage: scripts/vault-search "your query" [--top 5] [--kind blocks]
+exec "$(dirname "$0")/.vault-search-venv/bin/python" "$(dirname "$0")/vault_search.py" "$@"

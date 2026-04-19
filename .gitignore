@@ -1,0 +1,30 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+scripts/.vault-search-venv/
+*.egg-info/
+
+# Logs + runtime output
+logs/
+briefings/
+checkpoints/
+journal/
+prep/
+
+# Obsidian workspace state (keep the vault itself, not the UI state)
+vault/.obsidian/workspace*.json
+vault/.obsidian/graph.json
+vault/.smart-env/
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/
+*.swp

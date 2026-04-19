@@ -1,0 +1,134 @@
+# Scheduled task manifest.
+#
+# Each task is a self-contained unit: a prompt file + a schedule + metadata.
+# The installer (`install.sh`) reads this file and generates the right
+# scheduler entries for your platform (launchd on macOS, cron on Linux/WSL).
+#
+# To add a new task:
+#   1. Drop a new prompt at `prompts/<slug>.md`
+#   2. Add a block here with a slug that matches
+#   3. Re-run `scripts/scheduled/install.sh`
+#
+# Fields per task:
+#   name              — slug, matches prompts/<name>.md
+#   description       — one line shown during onboarding
+#   hour, minute      — 24-hour local time
+#   days_of_week      — ISO weekdays [1..7], 1=Monday. Omit for every day.
+#   model             — claude model id (sonnet | opus | haiku). Default: sonnet.
+#   timeout_secs      — kill the run after this many seconds. Default: 600.
+#   integrations      — list of integrations required (calendar | gmail | …).
+#                       If any required integration is not configured, task is skipped.
+#   enabled           — set to true to schedule; false to keep the prompt around but not run.
+#   category          — briefing | checkpoint | journal | scan | review | util
+#
+# Special schedules (instead of hour/minute/days_of_week):
+#   cron: "MIN HOUR DOM MON DOW"   — raw cron expression (takes precedence)
+#   every_minutes: N                — every N minutes (launchd uses StartInterval)
+
+tasks:
+  - name: morning-briefing
+    description: "8am: reads calendar + overdue todos + open loops, writes briefings/YYYY-MM-DD.md with action items only, pushes to phone."
+    hour: 8
+    minute: 0
+    days_of_week: [1, 2, 3, 4, 5]
+    model: sonnet
+    integrations: [calendar]
+    enabled: false
+    category: briefing
+
+  - name: midday-checkpoint
+    description: "12pm: quick honest read on how the day is actually going vs the morning plan. Flags drift."
+    hour: 12
+    minute: 0
+    days_of_week: [1, 2, 3, 4, 5]
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: checkpoint
+
+  - name: daily-journal
+    description: "10pm: end-of-day reflection. Extracts learnings + preferences as facts into the vault."
+    hour: 22
+    minute: 0
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: journal
+
+  - name: kanban-staleness
+    description: "11am: scans the Kanban board, flags cards sitting untouched for >7 days if 3+ are stale."
+    hour: 11
+    minute: 0
+    days_of_week: [1, 2, 3, 4, 5]
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: util
+
+  - name: email-scan-am
+    description: "10:30am: pulls unread Gmail, skips newsletters/marketing, surfaces what actually needs a reply."
+    hour: 10
+    minute: 30
+    days_of_week: [1, 2, 3, 4, 5]
+    model: sonnet
+    integrations: [gmail]
+    enabled: false
+    category: scan
+
+  - name: email-scan-pm
+    description: "2:30pm: second email sweep for afternoon arrivals."
+    hour: 14
+    minute: 30
+    days_of_week: [1, 2, 3, 4, 5]
+    model: sonnet
+    integrations: [gmail]
+    enabled: false
+    category: scan
+
+  - name: meeting-prep
+    description: "3:30pm (Sun–Thu): tomorrow's meetings. Pulls attendee context from the vault, drafts talking points."
+    hour: 15
+    minute: 30
+    days_of_week: [1, 2, 3, 4, 7]
+    model: sonnet
+    integrations: [calendar]
+    enabled: false
+    category: briefing
+
+  - name: partner-morning
+    description: "Morning nudge to connect with a partner (spouse, close family). Skip if no partner configured."
+    hour: 10
+    minute: 15
+    days_of_week: [1, 2, 3, 4, 5, 6, 7]
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: util
+
+  - name: partner-evening
+    description: "Evening intention for presence with a partner. Skip if no partner configured."
+    hour: 17
+    minute: 0
+    days_of_week: [1, 2, 3, 4, 5, 6, 7]
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: util
+
+  - name: weekly-review
+    description: "Friday 4pm: cross-references the week's meetings, emails, and todos. Surfaces dropped balls."
+    hour: 16
+    minute: 0
+    days_of_week: [5]
+    model: opus
+    integrations: [calendar, gmail]
+    enabled: false
+    category: review
+
+  - name: git-sync
+    description: "Hourly: auto-commit and push vault changes so mobile Obsidian stays in sync."
+    cron: "0 * * * *"
+    model: sonnet
+    integrations: []
+    enabled: false
+    category: util

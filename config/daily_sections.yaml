@@ -1,0 +1,34 @@
+# Daily note section layout for `vault/daily/YYYY-MM-DD.md`.
+#
+# Each section is a heading written by one of the scheduled tasks.
+# - key: internal identifier passed to write_to_daily.py (e.g. --key "Morning")
+# - title: the actual heading shown in Obsidian (emoji optional)
+# - owner: the scheduled task slug that produces this section
+#
+# Sections are rendered in the order listed here. You can reorder, add, or
+# remove entries without touching Python — just save and re-run scheduled tasks.
+
+sections:
+  - key: Morning
+    title: "☀️ Morning"
+    owner: morning-briefing
+
+  - key: Midday
+    title: "🔔 Midday"
+    owner: midday-checkpoint
+
+  - key: Meeting Prep
+    title: "Meeting Prep"
+    owner: meeting-prep
+
+  - key: "Yesterday's Recap"
+    title: "Yesterday's Recap"
+    owner: daily-journal
+
+  - key: Open Loops
+    title: "Open Loops"
+    owner: daily-journal
+
+  - key: Evening
+    title: "🌙 Evening"
+    owner: daily-journal
