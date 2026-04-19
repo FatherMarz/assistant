@@ -145,7 +145,7 @@ python3 scripts/setup.py --profile /tmp/assistant-onboarding.json
 
 Relay the script's output to the user. If it errors, surface the error plainly — don't pretend it worked.
 
-### Section 11 — Verify
+### Section 11 — Verify Install
 
 After setup.py succeeds, do a one-shot verification:
 
@@ -155,12 +155,117 @@ After setup.py succeeds, do a one-shot verification:
    - macOS: `launchctl list | grep com.assistant` — show what's scheduled
    - Linux/WSL: `crontab -l | grep assistant` — show cron entries
 
+### Section 12 — Post-Install Checklist
+
+These are things the user has to do in the GUI or outside the terminal. Walk them through interactively, one step at a time. Don't just dump the list — confirm each step before moving to the next. For the venv + test-run steps, run the commands yourself.
+
+#### 12a. Obsidian (human step)
+
+Check if Obsidian is installed:
+- macOS: `ls /Applications/Obsidian.app 2>/dev/null && echo "installed"`
+- Linux: `command -v obsidian >/dev/null && echo "installed"`
+- WSL (check Windows side): "I can't check that from here — is Obsidian installed on Windows?"
+
+If not installed, tell them to grab it from https://obsidian.net and come back.
+
+Once installed, say:
+
+> "Open Obsidian. Click 'Open folder as vault' and point it at `<repo>/vault/`. Let me know when it's open."
+
+Wait for confirmation.
+
+#### 12b. Obsidian plugins (human step)
+
+Say:
+
+> "In Obsidian: Settings → Community plugins → turn OFF 'Restricted mode' if it's on. Then 'Browse' and install these five — I'll wait. Say 'next' after each one you've installed:
+>  - **Kanban** by mgmeyers — renders `todos.md` as a 6-column board
+>  - **Dataview** — powers the queries in Brain.md and the folder hubs
+>  - **Smart Connections** — builds the embedding cache for semantic search
+>  - **Obsidian Git** — auto-commits the vault (optional but recommended)
+>  - **Tasks** — unified view across all open todos"
+
+After each confirmation, one sentence: "Got it, next is X." Don't lecture.
+
+After all five: "Now enable each one in the same Community plugins screen (toggle them on). Say 'done' when all are green."
+
+#### 12c. Smart Connections cache (human step, then verify)
+
+Say:
+
+> "Smart Connections is now indexing your vault in the background. Open Settings → Smart Connections → 'Connections' tab and watch the progress bar. On a fresh vault this takes <1 minute. Tell me when it hits 100%."
+
+After confirmation, verify from the terminal:
+```bash
+ls <repo>/vault/.smart-env/multi/*.ajson 2>/dev/null | head -3
+```
+If files exist, the cache is live.
+
+#### 12d. Semantic search venv (you run this)
+
+```bash
+python3 -m venv <repo>/scripts/.vault-search-venv
+<repo>/scripts/.vault-search-venv/bin/pip install sentence-transformers numpy --quiet
+```
+
+First install takes 2–3 minutes (downloads ~200MB of torch + the model). Narrate: "Installing sentence-transformers — this'll take a couple minutes, grab water."
+
+Then test:
+```bash
+<repo>/scripts/vault-search "test query" --top 3
+```
+
+If it returns paths, semantic search works. If it errors, surface the error and move on — not blocking.
+
+#### 12e. Integration secrets (human step)
+
+Open `.env` in the terminal and walk through each line they enabled:
+
+- `PUSHOVER_TOKEN=` and `PUSHOVER_USER=` if they enabled Pushover. Say: "Go to pushover.net, create an app to get the token, and copy your user key from the dashboard. Paste them here."
+- For Gmail/Calendar: remind them they need to install the `gog` skill (or a Gmail MCP server) separately — not part of this repo. Point them at `docs/integrations.md`.
+
+If Pushover is enabled, test it:
+```bash
+curl -s -F "token=$PUSHOVER_TOKEN" -F "user=$PUSHOVER_USER" \
+  -F "title=Setup Test" -F "message=Hello from <assistant-name>" \
+  https://api.pushover.net/1/messages.json
+```
+Should get a `{"status":1,...}` response and a push on their phone.
+
+#### 12f. Test-run a scheduled task (you run this)
+
+Pick the simplest enabled task (daily-journal or kanban-staleness — no external integrations). Run it manually:
+
+```bash
+<repo>/scripts/scheduled/run.sh daily-journal
+```
+
+Tail the log:
+```bash
+tail -30 <repo>/logs/scheduled/daily-journal.log
+```
+
+Report what happened. If it failed, surface the error plainly — don't claim success if `exit 0` didn't show up.
+
+#### 12g. Git remote (optional)
+
+Ask: "Do you want to back the vault up to a private GitHub repo so it syncs to mobile Obsidian?"
+
+If yes, walk them through:
+1. `gh repo create <name> --private` (or create via the web)
+2. `cd <repo> && git init && git remote add origin <url> && git push -u origin main`
+3. Enable the `git-sync` scheduled task in manifest.yaml and re-run install.sh
+
+If no, skip.
+
+### Section 13 — Wrap
+
 Final message to user (one-line each):
 - "Your assistant `<name>` is set up."
 - "Type `/<slug>` in any Claude Code session to activate the persona."
-- "Scheduled tasks will fire starting <next trigger time>."
+- "Next scheduled task fires at <time>."
 - "Edit `config/USER.md` anytime as you add people or priorities."
-- "Pushover/Gmail/Calendar secrets: open `.env` and fill them in."
+- "If something breaks: `tail -50 <repo>/logs/scheduled/<task>.log` has the details."
 
 ---
 
