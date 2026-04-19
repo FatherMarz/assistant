@@ -20,9 +20,10 @@ Settings → Community plugins → Browse.
 - **Smart Connections** — generates embeddings, powers semantic search
 
 **Recommended:**
-- **Obsidian Git** — auto-commit + push the vault so it syncs to mobile
 - **Tasks** — advanced todo views across all notes
 - **Pretty Properties** — nicer frontmatter editor
+
+**Mobile sync:** use **Obsidian Sync** (Core plugin, paid ~$4/mo). Settings → Core plugins → Sync. Works cross-platform, handles conflicts, and is much less fiddly than the Git-based approach for the vault itself. The `git-sync` scheduled task in this repo is for backing up *everything else* (config, scripts, briefings, logs) — not the vault.
 
 After installing each, Settings → Community plugins → toggle them on.
 

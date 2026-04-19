@@ -178,16 +178,17 @@ Wait for confirmation.
 
 Say:
 
-> "In Obsidian: Settings → Community plugins → turn OFF 'Restricted mode' if it's on. Then 'Browse' and install these five — I'll wait. Say 'next' after each one you've installed:
+> "In Obsidian: Settings → Community plugins → turn OFF 'Restricted mode' if it's on. Then 'Browse' and install these four — I'll wait. Say 'next' after each one you've installed:
 >  - **Kanban** by mgmeyers — renders `todos.md` as a 6-column board
 >  - **Dataview** — powers the queries in Brain.md and the folder hubs
 >  - **Smart Connections** — builds the embedding cache for semantic search
->  - **Obsidian Git** — auto-commits the vault (optional but recommended)
 >  - **Tasks** — unified view across all open todos"
 
 After each confirmation, one sentence: "Got it, next is X." Don't lecture.
 
-After all five: "Now enable each one in the same Community plugins screen (toggle them on). Say 'done' when all are green."
+After all four: "Now enable each one in the same Community plugins screen (toggle them on). Say 'done' when all are green."
+
+Also mention: "For vault sync across devices (desktop → mobile), Obsidian Sync (paid, built-in) is the simplest path. Settings → Core plugins → Sync. ~$4/mo. Skip if you don't need mobile."
 
 #### 12c. Smart Connections cache (human step, then verify)
 
@@ -249,7 +250,9 @@ Report what happened. If it failed, surface the error plainly — don't claim su
 
 #### 12g. Git remote (optional)
 
-Ask: "Do you want to back the vault up to a private GitHub repo so it syncs to mobile Obsidian?"
+For backing up the whole repo (config, scripts, briefings, journal, logs) to a private GitHub repo. Note: this is separate from vault-to-mobile sync — Obsidian Sync handles that. The git-sync task is about having a recoverable backup of everything if your machine dies.
+
+Ask: "Do you want to push the whole repo to a private GitHub for backup?"
 
 If yes, walk them through:
 1. `gh repo create <name> --private` (or create via the web)
